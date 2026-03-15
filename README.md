@@ -26,3 +26,5 @@ gcc -nostdlib -static -fno-pie -no-pie hello.c -o hello
 
 ## Результат роботи
 
+<img width="510" height="159" alt="Image" src="https://github.com/user-attachments/assets/93f50a85-fb1a-42ab-a478-bc12feef9d18" />
+
