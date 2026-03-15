@@ -29,7 +29,6 @@ int main(int argc, char **argv)
 
     printf("ELF entry point: 0x%lx\n", ehdr.e_entry);
 
-    // Масив для всіх заголовків програм
     Elf64_Phdr *phdrs = malloc(ehdr.e_phnum * sizeof(Elf64_Phdr));
     lseek(fd, ehdr.e_phoff, SEEK_SET);
     read(fd, phdrs, ehdr.e_phnum * sizeof(Elf64_Phdr));
@@ -40,7 +39,6 @@ int main(int argc, char **argv)
 
         printf("Loading segment %d at 0x%lx\n", i, phdrs[i].p_vaddr);
 
-        // Вирівнювання адреси по сторінці (4KB)
         uint64_t virt_addr = phdrs[i].p_vaddr & ~0xfff;
         uint64_t offset_in_page = phdrs[i].p_vaddr & 0xfff;
         uint64_t map_len = phdrs[i].p_memsz + offset_in_page;
@@ -58,11 +56,9 @@ int main(int argc, char **argv)
             exit(1);
         }
 
-        // Копіюємо дані сегмента з файлу в пам'ять
         lseek(fd, phdrs[i].p_offset, SEEK_SET);
         read(fd, (void *)phdrs[i].p_vaddr, phdrs[i].p_filesz);
 
-        // Обнуляємо залишок сегмента (.bss), якщо p_memsz > p_filesz
         if (phdrs[i].p_memsz > phdrs[i].p_filesz) {
             memset((void *)(phdrs[i].p_vaddr + phdrs[i].p_filesz), 0, 
                    phdrs[i].p_memsz - phdrs[i].p_filesz);
@@ -74,7 +70,6 @@ int main(int argc, char **argv)
 
     printf("Jumping to entry point...\n");
 
-    // Важливо: переконайся, що прототип функції правильний
     void (*entry)() = (void (*)())ehdr.e_entry;
     entry();
 
